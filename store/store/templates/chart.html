@@ -1,0 +1,40 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the data from the server-side context
+        var productNames = {{ product_names|safe }};
+        var productQuantities = {{ product_quantities|safe }};
+        
+        // Create the chart
+        var ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: productNames,
+                datasets: [{
+                    label: 'Product Quantities',
+                    data: productQuantities,
+                    backgroundColor: [
+                    "#fd7f6f", 
+                    "#7eb0d5", 
+                    "#b2e061", 
+                    "#bd7ebe", 
+                    "#ffb55a", 
+                    "#ffee65", 
+                    "#beb9db", 
+                    "#fdcce5",
+                    "#8bd3c7"
+                        ], // Customize the bar color
+                }]
+            },
+            options: {
+                
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>

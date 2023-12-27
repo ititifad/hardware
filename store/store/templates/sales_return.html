@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Sales Return</h2>
+
+  {% if error_message %}
+    <p>{{ error_message }}</p>
+  {% endif %}
+
+  <form method="post" action="{% url 'sales_return' %}">
+    {% csrf_token %}
+    <label for="sale_id">Sale ID:</label>
+    <input type="text" name="sale_id" id="sale_id">
+    <input type="submit" value="Return Sale">
+  </form>
+{% endblock %}

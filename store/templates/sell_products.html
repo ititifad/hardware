@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  thead {
+    background-color: rgb(202, 202, 202);
+    color: rgb(97, 97, 97);
+  }
+</style>
+
+<div class="container">
+
+  <p style="color: red;">
+    {{ error_message }}
+  </p>
+
+  <div class="row">
+
+    <!-- <form method="POST" action="{% url 'sell_products' %}">
+      {% csrf_token %}
+      <div class="col-lg-8">
+        <div class="input-group mb-3">
+          <input type="text" id="name" name="name" placeholder="Enter Product Name" class="form-control" required>
+          <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search Product</button>
+        </div>
+      </div>
+    </form> -->
+    <!-- Search Form -->
+  <!-- Search Form -->
+  <form method="get" action="{% url 'sell_products' %}">
+    <label for="search">Search Product:</label>
+    <input type="text" name="search" value="{{ search_query }}">
+    <button type="submit" class="">Search</button>
+  </form>
+
+    <!-- <div class="col-lg-12 pt-3">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Product Code</th>
+              <th>Description</th>
+              <th>In Stock</th>
+              <th>Price</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if product %}
+            <tr>
+              <th>{{ product.id }}</th> -->
+              <!-- Since you removed the barcode field, replace it with the name field -->
+              <!-- <td>{{ product.name }}</td>
+              <td>{{ product.name }}</td>
+              <td>{{ product.inventory_quantity }}</td>
+              <td>{{ product.standard_price }}</td>
+              <td>
+                <form method="POST" action="{% url 'sell_products' %}">
+                  {% csrf_token %} -->
+                  <!-- Replace "barcode" with "name" in the hidden field -->
+                  <!-- <input type="hidden" name="name" value="{{ product.name }}">
+                  <label for="quantity">Quantity:</label>
+                  <input type="number" id="quantity" name="quantity" min="1" max="{{ product.inventory_quantity }}" required>
+                  <button type="submit" class="btn btn-secondary btn-sm">Click To Sell</button>
+                </form>
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<div class="container mt-5">
+    <form method="post" action="{% url 'sell_products' %}">
+        {% csrf_token %}
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <table class="table table-sm table-bordered text-center">
+            <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Product Code</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Inventory Quantity</th>
+                    <th scope="col">Product Price</th>
+                    <th scope="col">Quantity to Sell</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                      <td>{{ product.id }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.inventory_quantity }}</td>
+                        <td>{{ product.standard_price }}</td>
+                        <td>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="quantity" value="1" min="1" max="{{ product.inventory_quantity }}">
+                                <input type="hidden" name="product" value="{{ product.id }}">
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-info">Sell Products</button>
+    </form>
+</div>
+
+
+
+
+
+{% endblock %}

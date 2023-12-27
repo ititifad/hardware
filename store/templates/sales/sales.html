@@ -1,0 +1,38 @@
+{% load humanize %}
+
+<style>
+    .card{
+        box-shadow: 13px 13px 20px #cbced1, -13px -13px 20px #fff;
+    }
+</style>
+
+    <div class="row row-cols-1 row-cols-md-2 justify-content-center">
+        <div class="col-lg-3">
+    <div class="card mb-2">
+        <div class="card-body">
+        <p><strong>Total Sales</strong>: {{ total_sales|intcomma }}</p>
+        </div>
+    </div>
+    </div>
+    <div class="col-lg-3">
+    <div class="card mb-2">
+        <div class="card-body">
+        <p><strong>Total Revenue</strong>: {{ total_revenue|intcomma }}</p>
+        </div>
+    </div>
+    </div>
+    <div class="col-lg-3">
+    <div class="card mb-2">
+        <div class="card-body">
+        <p><strong>Total Cost</strong>: {{ total_cost|intcomma }}</p>
+        </div>
+    </div>
+    </div>
+    <div class="col-lg-3">
+    <div class="card">
+        <div class="card-body">
+        <p><strong>Profit/Loss</strong>: {{ profit|intcomma }}</p>
+        </div>
+    </div>
+    </div>
+    </div>

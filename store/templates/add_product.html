@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+ 
+<div class="container mb-3">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+  
+      <div class="card bg-white py-3 px-4">
+      <form method="post">
+          {% csrf_token %}
+          <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <input type="text" name="name" id="form2Example1" class="form-control" required/>
+    <label class="form-label" for="form2Example1">Product name</label>
+  </div>
+
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <input type="number" name="inventory_quantity" id="form2Example1" class="form-control" required/>
+    <label class="form-label" for="form2Example1">Inventory Quantity</label>
+  </div>
+
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <input type="number" name="standard_price" id="form2Example1" class="form-control" required/>
+    <label class="form-label" for="form2Example1">Standard Price</label>
+  </div>
+
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <input type="number" name="current_cost" id="form2Example1" class="form-control" required/>
+    <label class="form-label" for="form2Example1">Current Cost</label>
+  </div>
+
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <input type="number" name="reorder_point" id="form2Example1" class="form-control" />
+    <label class="form-label" for="form2Example1">Reorder Point</label>
+  </div>
+          
+<!--           
+          <label for="exampleFormControlInput1" class="form-label">Name</label>
+          
+          <input type="text" name="name" id="name" class="form-control" required>
+          <label for="exampleFormControlInput1" class="form-label">Inventory Quantity:</label>
+          <input type="number" name="inventory_quantity" id="inventory_quantity" class="form-control" required>
+          <label for="exampleFormControlInput1" class="form-label">Standard Price::</label>
+          <input type="number" name="standard_price" id="standard_price" class="form-control" required>
+          <label for="exampleFormControlInput1" class="form-label">Current Cost:</label>
+          
+          <input type="number" name="current_cost" id="current_cost" class="form-control" required>
+          <label for="exampleFormControlInput1" class="form-label">Reorder Point:</label>
+          <input type="number" name="reorder_point" id="reorder_point" class="form-control" required> -->
+          
+          
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i>
+            Add Product</button>
+          
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

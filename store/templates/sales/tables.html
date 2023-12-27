@@ -1,0 +1,28 @@
+
+
+<div class="table-responsive">
+    <table class="table table-bordered text-center table-sm table-striped table-hover">
+        <thead class="bg-light">
+            <tr>
+                <th>S/N</th>
+                <th>Product Name</th>
+                <th>Product Price</th>
+                <th>Product Quantity</th>
+                <th>Total Price</th>
+                <th>Date</th>
+            </tr>
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{sale.product.name}}</td>
+                    <td>{{sale.product.standard_price}}</td>
+                    <td>{{ sale.quantity }}</td>
+                    <td>{{ sale.get_total_price }}</td>
+                    <td>{{ sale.sale_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </thead>
+    </table>
+</div>

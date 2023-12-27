@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+
+{% block content %}
+
+
+<div class="container">
+    <div class="row justify-content-center text-muted">
+        <div class="col-lg-9">
+            <h3>Today Sales and Profit Report</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>Daily Sales</th>
+                        <th>Daily Profit</th>
+                        
+                    </tr>
+                    
+                    <tr>
+                        <td>{{daily_sales|intcomma}}</td>
+                        <td>{{daily_profit|intcomma}}</td>
+                        
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="col-lg-9 pt-5">
+            <h3>Weekly Sales and Profit Report</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>Weekly Sales</th>
+                        <th>Weekly Profit</th>
+                        
+                    </tr>
+                    
+                    <tr>
+                        <td>{{weekly_sales|intcomma}}</td>
+                        <td>{{weekly_profit|intcomma}}</td>
+                        
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="col-lg-9 pt-5">
+            <h3>Monthly Sales and Profit Report</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>Monthly Sales</th>
+                        <th>Monthly Profit</th>
+                        
+                    </tr>
+                    
+                    <tr>
+                        <td>{{monthly_sales|intcomma}}</td>
+                        <td>{{monthly_profit|intcomma}}</td>
+                        
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="col-lg-9 pt-5">
+            <h3>Yearly Sales and Profit Report</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>Yearly Sales</th>
+                        <th>Yearly Profit</th>
+                        
+                    </tr>
+                    
+                    <tr>
+                        <td>{{yearly_sales|intcomma}}</td>
+                        <td>{{yearly_profit|intcomma}}</td>
+                        
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

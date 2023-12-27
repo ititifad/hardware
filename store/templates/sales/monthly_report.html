@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+<div class="container">
+    <a href="{% url 'monthly_sales_report' %}?pdf=1" target="_blank" class="btn btn-info">Generate & Download PDF</a>
+    <h1 class="text-center">Monthly Sales Report</h1>
+    <br>
+    <div class="row">
+        {% include 'sales/sales.html' %}
+    </div>
+</div>
+
+
+<div class="container pt-5">
+    <h1 class="text-center">Sales History</h1>
+    <div class="row justify-content-center">
+        {% include 'sales/tables.html' %}
+    </div>
+</div>
+
+
+    
+{% endblock content %}

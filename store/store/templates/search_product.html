@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Search Product</h2>
+  <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="search_query" placeholder="Enter product name" required>
+    <button type="submit">Search</button>
+  </form>
+
+  {% if products %}
+    <h3>Search Results:</h3>
+    <ul>
+      {% for product in products %}
+        <li>{{ product.name }} - Inventory: {{ product.inventory_quantity }}</li>
+      {% empty %}
+        <li>No products found.</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock content %}

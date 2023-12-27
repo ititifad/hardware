@@ -1,0 +1,45 @@
+<script>
+    // Fetch stock data from the server
+    fetch('/stock_data/')
+        .then(response => response.json())
+        .then(data => {
+            const totalQuantity = data.quantity.reduce((a, b) => a + b, 0);
+            const percentages = data.quantity.map(qty => ((qty / totalQuantity) * 100).toFixed(2) + '%');
+            const labelsWithPercentages = data.labels.map((label, index) => label + ' (' + percentages[index] + ')');
+
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labelsWithPercentages,
+                    datasets: [{
+                        label: 'Stock',
+                        data: data.quantity,
+                        backgroundColor: [
+                        "#fd7f6f", 
+                        "#7eb0d5", 
+                        "#b2e061", 
+                        "#bd7ebe", 
+                        "#ffb55a", 
+                        "#ffee65", 
+                        "#beb9db", 
+                        "#fdcce5",
+                        "#8bd3c7"
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 1,
+                        hoverOffset: 4,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+</script>
