@@ -27,13 +27,7 @@
   <div class="col-lg-3">
     <!-- <div class="card"> -->
         <!-- <div class="card-body"> -->
-            <div class="card mb-2">
-                <div class="card-body text-center">
-                    <h6><i class="fa-solid fa-money-bill-1 position-absolute top-1 start-0 px-2"></i>
-                        Today Revenue: {{daily_revenues|intcomma}}</h6>
-                </div>
-            </div>
-            <hr>
+           
             <div class="card mb-2">
                 <div class="card-body text-center">
                     <h6><i class="fa fa-shopping-cart position-absolute top-1 start-0 px-2"></i>
@@ -41,6 +35,14 @@
 
                 </div>
             </div>
+            <hr>
+            <div class="card mb-2">
+                <div class="card-body text-center">
+                    <h6><i class="fa-solid fa-money-bill-1 position-absolute top-1 start-0 px-2"></i>
+                        Today Revenue: {{daily_revenues|intcomma}}</h6>
+                </div>
+            </div>
+            
             <hr>
             <div class="card mb-2">
                 <div class="card-body text-center">
@@ -61,7 +63,7 @@
   <div class="col-lg-12 pt-5">
     <h4 class="text-center">Most Recent Sales</h4>
     <div class="table-responsive">
-        <table class="table table-bordered text-center table-sm table-striped table-hover">
+        <table class="table table-hover text-center">
             <tr>
                 <th>s/n</th>
                 <th>Product Name</th>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Receipt</title>
+    <style>
+        /* Add some basic styling for the receipt */
+    </style>
+</head>
+<body>
+    <h1>Sales Receipt</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales %}
+            <tr>
+                <td>{{ sale.product.name }}</td>
+                <td>{{ sale.quantity }}</td>
+                <td>${{ sale.get_total_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    </body>
+</html>

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center">Quick Inventory Adjustment</h1>
+
+
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
+        <div id="adjustmentsContainer">
+            <input type="hidden" name="num_adjustments" id="numAdjustments" value="1">
+            <div class="form-row align-items-center mb-3">
+                <div class="col-sm-5">
+                    <select class="form-select" name="selected_product_1">
+                        {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <input type="number" class="form-control" name="adjustment_quantity_1" placeholder="Adjustment Quantity">
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm mb-3" id="addAdjustmentRow">Add Another Adjustment</button>
+        <button type="submit" class="btn btn-success btn-sm mb-3">Adjust Inventory</button>
+    </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let counter = 1; // Keep track of adjustment rows
+
+        $("#addAdjustmentRow").click(function() {
+            let newRow = `
+                <div class="form-row align-items-center mb-3">
+                    <div class="col-sm-5">
+                        <select class="form-select" name="selected_product_${counter + 1}">
+                            {% for product in products %}
+                            <option value="{{ product.id }}">{{ product.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="number" class="form-control" name="adjustment_quantity_${counter + 1}" placeholder="Adjustment Quantity">
+                    </div>
+                </div>
+            `;
+            $("#adjustmentsContainer").append(newRow);
+            counter++;
+            $("#numAdjustments").val(counter);
+        });
+    });
+</script>
+{% endblock %}

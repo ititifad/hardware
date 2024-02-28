@@ -5,7 +5,7 @@ from .models import *
 
 @admin.register(Product)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'inventory_quantity', 'standard_price', 'current_cost')
+    list_display = ('name', 'inventory_quantity', 'standard_price', 'current_cost','reorder_point')
     list_filter = ('name',)
     search_fields = ('name',)
 

@@ -552,13 +552,18 @@ body {
             <li class="sidebar-dropdown">
               <a href="#">
                 <i class="fa fa-shopping-cart"></i>
-                <span>Sell Products</span>
+                <span>POS</span>
                 <span class="badge badge-pill badge-danger"></span>
               </a>
               <div class="sidebar-submenu">
                 <ul>
                   <li>
                     <a href="{% url 'sell_products' %}">Sell Product
+  
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'sold_products' %}">Sold Products
   
                     </a>
                   </li>
@@ -581,6 +586,16 @@ body {
                   </li>
                   <li>
                     <a href="{% url 'stocks' %}">Inventory List
+  
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'quick_inventory_adjustment' %}">Quick Inventory Adjustment
+  
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'quick_price_adjustment' %}">Quick Price Adjustment
   
                     </a>
                   </li>
@@ -623,6 +638,10 @@ body {
                   <li>
                     <a href="{% url 'top_selling_products' %}">Top Selling Products</a>
                   </li>
+                  <li>
+                    <a href="{% url 'reorder_point_products' %}">Reorder Point</a>
+                  </li>
+                  
                   <!-- <li>
                     <a href="#">Line chart</a>
                   </li>

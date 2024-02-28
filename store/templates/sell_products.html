@@ -1,121 +1,88 @@
 {% extends 'base.html' %}
-
+{% load humanize %}
 {% block content %}
-<style>
-  thead {
-    background-color: rgb(202, 202, 202);
-    color: rgb(97, 97, 97);
-  }
-</style>
+<script>
+    var selectedProductSet = new Set();
 
-<div class="container">
+    function addProductToTable() {
+        var selectedProducts = document.getElementById('selectedProducts');
+        var quantities = document.getElementById('quantities');
+        var productTable = document.getElementById('productTable');
 
-  <p style="color: red;">
-    {{ error_message }}
-  </p>
+        var selectedProductId = selectedProducts.value;
+        var quantity = quantities.value;
 
-  <div class="row">
+        // Check if product is already added
+        if (!selectedProductSet.has(selectedProductId)) {
+            selectedProductSet.add(selectedProductId);
 
-    <!-- <form method="POST" action="{% url 'sell_products' %}">
-      {% csrf_token %}
-      <div class="col-lg-8">
-        <div class="input-group mb-3">
-          <input type="text" id="name" name="name" placeholder="Enter Product Name" class="form-control" required>
-          <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search Product</button>
-        </div>
-      </div>
-    </form> -->
-    <!-- Search Form -->
-  <!-- Search Form -->
-  <form method="get" action="{% url 'sell_products' %}">
-    <label for="search">Search Product:</label>
-    <input type="text" name="search" value="{{ search_query }}">
-    <button type="submit" class="">Search</button>
-  </form>
+            var row = productTable.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2); // Added for standard price
 
-    <!-- <div class="col-lg-12 pt-3">
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
+            cell1.innerText = selectedProducts.options[selectedProducts.selectedIndex].text;
+            cell2.innerText = quantity;
+
+            // Fetch standard price from selected product
+            var product = document.getElementById('selectedProducts').options[document.getElementById('selectedProducts').selectedIndex];
+            var standardPrice = product.getAttribute('data-standard-price');
+            cell3.innerText = standardPrice;
+
+            // Create hidden inputs to send product and quantity data with the form
+            var input1 = document.createElement("input");
+            input1.type = "hidden";
+            input1.name = "selected_products";
+            input1.value = selectedProductId;
+            row.appendChild(input1);
+
+            var input2 = document.createElement("input");
+            input2.type = "hidden";
+            input2.name = "quantities";
+            input2.value = quantity;
+            row.appendChild(input2);
+        } else {
+            // Handle duplicate product selection (e.g., show a message)
+            alert("Product already added to the table.");
+        }
+    }
+
+    function clearSelectedProductSet() {
+        selectedProductSet.clear();
+    }
+</script>
+
+
+
+<h2>Sell Products</h2>
+
+<form method="post" action="{% url 'sell_products' %}" onsubmit="clearSelectedProductSet()">
+    {% csrf_token %}
+
+    <label for="products">Select Products:</label>
+    <select id="selectedProducts" name="selected_products">
+        {% for product in products %}
+        <option value="{{ product.id }}" data-standard-price="{{ product.standard_price|intcomma }}">{{ product.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantities" name="quantities" value="1" min="1">
+
+    <button type="button" onclick="addProductToTable()">Add to Table</button>
+<hr>
+    <table id="productTable" class="table">
+        <thead>
             <tr>
-              <th>No.</th>
-              <th>Product Code</th>
-              <th>Description</th>
-              <th>In Stock</th>
-              <th>Price</th>
-              <th>Quantity</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Standard Price</th>
             </tr>
-          </thead>
-          <tbody>
-            {% if product %}
-            <tr>
-              <th>{{ product.id }}</th> -->
-              <!-- Since you removed the barcode field, replace it with the name field -->
-              <!-- <td>{{ product.name }}</td>
-              <td>{{ product.name }}</td>
-              <td>{{ product.inventory_quantity }}</td>
-              <td>{{ product.standard_price }}</td>
-              <td>
-                <form method="POST" action="{% url 'sell_products' %}">
-                  {% csrf_token %} -->
-                  <!-- Replace "barcode" with "name" in the hidden field -->
-                  <!-- <input type="hidden" name="name" value="{{ product.name }}">
-                  <label for="quantity">Quantity:</label>
-                  <input type="number" id="quantity" name="quantity" min="1" max="{{ product.inventory_quantity }}" required>
-                  <button type="submit" class="btn btn-secondary btn-sm">Click To Sell</button>
-                </form>
-              </td>
-            </tr>
-            {% endif %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div> -->
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
-
-<div class="container mt-5">
-    <form method="post" action="{% url 'sell_products' %}">
-        {% csrf_token %}
-        {% if error_message %}
-            <div class="alert alert-danger" role="alert">
-                {{ error_message }}
-            </div>
-        {% endif %}
-        <table class="table table-sm table-bordered text-center">
-            <thead class="thead-dark">
-                <tr>
-                  <th scope="col">Product Code</th>
-                    <th scope="col">Product Name</th>
-                    <th scope="col">Inventory Quantity</th>
-                    <th scope="col">Product Price</th>
-                    <th scope="col">Quantity to Sell</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                    <tr>
-                      <td>{{ product.id }}</td>
-                        <td>{{ product.name }}</td>
-                        <td>{{ product.inventory_quantity }}</td>
-                        <td>{{ product.standard_price }}</td>
-                        <td>
-                            <div class="form-group">
-                                <input type="number" class="form-control" name="quantity" value="1" min="1" max="{{ product.inventory_quantity }}">
-                                <input type="hidden" name="product" value="{{ product.id }}">
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-info">Sell Products</button>
-    </form>
-</div>
-
-
-
-
-
-{% endblock %}
+    <button type="submit">Sell Products</button>
+</form>
+{% endblock content %}

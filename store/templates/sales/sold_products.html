@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+{% block content %}
+    <h2 class="text-center">Sold Products</h2>
+<div class="container">
+    <table class="table table-sm table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Sale ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Sale Date</th>
+                <th>Receipts</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.id }}</td>
+                    <td>{{ sale.product.name }}</td>
+                    <td>{{ sale.quantity }}</td>
+                    <td>{{ sale.sale_date }}</td>
+                    <td>
+                        <a href="{% url 'download_receipt' sale.id %}" target="_blank">
+                            Receipt for Sale #{{ sale.id }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
