@@ -1,8 +1,6 @@
 from django import forms
 from .models import *
-
-from django import forms
-
+from django.contrib.auth.models import User
 
 
 class ProductNameForm(forms.Form):
@@ -23,7 +21,6 @@ class ProductNameForm(forms.Form):
     #     if quantity <= 0:
     #         raise forms.ValidationError('Quantity must be greater than 0.')
     #     return quantity
-
 
 # class BarcodeForm(forms.Form):
 #     barcode = forms.IntegerField(label='Barcode', widget=forms.TextInput(attrs={'autofocus': True}))

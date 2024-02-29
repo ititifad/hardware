@@ -281,7 +281,19 @@ h4 {
   opacity: 0;
   pointer-events: none;
 }
-
+/* Custom styles for small devices */
+@media (max-width: 576px) {
+            .content {
+                width: 90%;
+                padding: 20px;
+            }
+            .content .text {
+                font-size: 24px;
+            }
+            .field input {
+                padding-left: 40px;
+            }
+        }
   </style>
 </head>
 
@@ -301,6 +313,8 @@ h4 {
       </div>
 
       <button>Login</button>
+      <h4>Don't Have an Account? <a href="{% url 'register' %}" style="color: #00c6ff;">Register Now</a></h4>
+      <br>
       <h4>or Login with social platforms</h4>
 
       <div class="social_icons">

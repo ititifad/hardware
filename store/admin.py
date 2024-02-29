@@ -14,3 +14,5 @@ class CommentAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('product', 'quantity', 'sale_date')
     list_filter = ('sale_date',)
+
+admin.site.register(Store)
