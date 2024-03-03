@@ -4,7 +4,9 @@
 
 {% block content %}
 
-<div class="container">
+<div class="text-right">
+  <a href="{% url 'reorder_point_products' %}?pdf=1" target="_blank" class="btn btn-info">Generate & Download PDF</a>
+</div>
     
 <table class="table">
   <thead>
@@ -28,7 +30,7 @@
     {% endfor %}
   </tbody>
 </table>
-</div>
+
 
 
 {% endblock %}

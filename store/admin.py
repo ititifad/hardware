@@ -1,10 +1,9 @@
 from django.contrib import admin
-
-# Register your models here.
 from .models import *
+from import_export.admin import ImportExportModelAdmin
 
 @admin.register(Product)
-class CommentAdmin(admin.ModelAdmin):
+class CommentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'inventory_quantity', 'standard_price', 'current_cost','reorder_point')
     list_filter = ('name',)
     search_fields = ('name',)

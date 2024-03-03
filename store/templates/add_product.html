@@ -1,66 +1,118 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
- 
+<div class="text-right">
+  <a href="{% url 'import_products' %}" class="btn btn-info">Import Products</a>
+</div>
 <div class="container mb-3">
   <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-10">
   
       <div class="card bg-white py-3 px-4">
-      <form method="post">
+      <form method="post" id="add-product-form">
           {% csrf_token %}
-          <!-- Email input -->
-  <div data-mdb-input-init class="form-outline mb-4">
-    <input type="text" name="name" id="form2Example1" class="form-control" required/>
-    <label class="form-label" for="form2Example1">Product name</label>
-  </div>
-
-  <!-- Email input -->
-  <div data-mdb-input-init class="form-outline mb-4">
-    <input type="number" name="inventory_quantity" id="form2Example1" class="form-control" required/>
-    <label class="form-label" for="form2Example1">Inventory Quantity</label>
-  </div>
-
-  <!-- Email input -->
-  <div data-mdb-input-init class="form-outline mb-4">
-    <input type="number" name="standard_price" id="form2Example1" class="form-control" required/>
-    <label class="form-label" for="form2Example1">Standard Price</label>
-  </div>
-
-  <!-- Email input -->
-  <div data-mdb-input-init class="form-outline mb-4">
-    <input type="number" name="current_cost" id="form2Example1" class="form-control" required/>
-    <label class="form-label" for="form2Example1">Current Cost</label>
-  </div>
-
-  <!-- Email input -->
-  <div data-mdb-input-init class="form-outline mb-4">
-    <input type="number" name="reorder_point" id="form2Example1" class="form-control" />
-    <label class="form-label" for="form2Example1">Reorder Point</label>
-  </div>
+          <!-- Product input fields -->
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Inventory Quantity</th>
+                <th>Standard Price</th>
+                <th>Current Cost</th>
+                <th>Reorder Point</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="product-fields">
+              <tr class="product-field">
+                <td>
+                  <input type="text" name="name[]" class="form-control" required/>
+                </td>
+                <td>
+                  <input type="number" name="inventory_quantity[]" class="form-control" required/>
+                </td>
+                <td>
+                  <input type="number" name="standard_price[]" class="form-control" required/>
+                </td>
+                <td>
+                  <input type="number" name="current_cost[]" class="form-control" required/>
+                </td>
+                <td>
+                  <input type="number" name="reorder_point[]" class="form-control"/>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-danger delete-btn"><i class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
           
-<!--           
-          <label for="exampleFormControlInput1" class="form-label">Name</label>
+          <!-- Add product button -->
+          <div class="text-center mb-3">
+            <button type="button" id="add-product-btn" class="btn btn-success">
+              <i class="fa-solid fa-plus"></i>
+              Add Another Product
+            </button>
+          </div>
           
-          <input type="text" name="name" id="name" class="form-control" required>
-          <label for="exampleFormControlInput1" class="form-label">Inventory Quantity:</label>
-          <input type="number" name="inventory_quantity" id="inventory_quantity" class="form-control" required>
-          <label for="exampleFormControlInput1" class="form-label">Standard Price::</label>
-          <input type="number" name="standard_price" id="standard_price" class="form-control" required>
-          <label for="exampleFormControlInput1" class="form-label">Current Cost:</label>
-          
-          <input type="number" name="current_cost" id="current_cost" class="form-control" required>
-          <label for="exampleFormControlInput1" class="form-label">Reorder Point:</label>
-          <input type="number" name="reorder_point" id="reorder_point" class="form-control" required> -->
-          
-          
-          <button type="submit" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i>
-            Add Product</button>
+          <!-- Submit button -->
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-plus"></i>
+              Add Product
+            </button>
+          </div>
           
       </form>
       </div>
     </div>
   </div>
 </div>
+
+<!-- JavaScript to add new product fields and delete existing ones -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const addProductBtn = document.getElementById('add-product-btn');
+    const productFields = document.getElementById('product-fields');
+
+    // Function to add a new product field
+    function addProductField() {
+      const productField = document.createElement('tr');
+      productField.classList.add('product-field');
+      productField.innerHTML = `
+        <td>
+          <input type="text" name="name[]" class="form-control" required/>
+        </td>
+        <td>
+          <input type="number" name="inventory_quantity[]" class="form-control" required/>
+        </td>
+        <td>
+          <input type="number" name="standard_price[]" class="form-control" required/>
+        </td>
+        <td>
+          <input type="number" name="current_cost[]" class="form-control" required/>
+        </td>
+        <td>
+          <input type="number" name="reorder_point[]" class="form-control"/>
+        </td>
+        <td>
+          <button type="button" class="btn btn-danger delete-btn"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      `;
+      productFields.appendChild(productField);
+    }
+
+    // Add product button event listener
+    addProductBtn.addEventListener('click', addProductField);
+
+    // Delete button event listener
+    productFields.addEventListener('click', function(event) {
+      if (event.target.classList.contains('delete-btn')) {
+        const productField = event.target.closest('.product-field');
+        productFields.removeChild(productField);
+      }
+    });
+  });
+</script>
+
 {% endblock content %}

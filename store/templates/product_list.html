@@ -18,8 +18,7 @@
                     <th>Inventory Quantity</th>
                     <th>Standard Price</th>
                     <th>Current Cost</th>
-                    <!-- <th>Reorder Point</th> -->
-                   
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,12 +28,19 @@
                         <td>{{ product.inventory_quantity }}</td>
                         <td>{{ product.standard_price }}</td>
                         <td>{{ product.current_cost }}</td>
-                        <!-- <td>{{ product.reorder_point }}</td> -->
-    
+                        <td>
+                            <a href="{% url 'update_product' product.id %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'delete_product' product.id %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
     </div>
   </div>
     </div>

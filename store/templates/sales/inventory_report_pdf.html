@@ -1,0 +1,109 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css"
+    rel="stylesheet"
+  />
+    <title>Inventory Value Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: lightblue;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .totals {
+            font-weight: normal;
+        }
+
+        .totals {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        margin-top: 20px;
+    }
+
+    .totals p {
+        margin: 0;
+        padding: 8px 0;
+    }
+
+    .totals p:first-child {
+        font-weight: normal;
+        font-size: 16px;
+    }
+h1{
+    font-size: 16px;
+    text-align: center;
+}
+    </style>
+</head>
+<body>
+
+    <h1>Inventory Value Report</h2>
+    <div class="card">
+        <div class="totals">
+            <p>Total Sales: {{ total_sales }}</p>
+            <p>Total Revenue: TZS {{ total_value|intcomma }}</p>
+            <p>Total Cost: TZS {{ total_cost|intcomma }}</p>
+            <p>Profit: TZS {{ profit|intcomma }}</p>
+        </div>
+    </div>
+
+    <br>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                    <th>Inventory Quantity</th>
+                    <th>Standard Price</th>
+                    <th>Current Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.inventory_quantity }}</td>
+                        <td>{{ product.standard_price }}</td>
+                        <td>{{ product.current_cost }}</td>
+                        <!-- <td>{{ product.reorder_point }}</td> -->
+    
+                    </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+
+    
+
+</body>
+</html>

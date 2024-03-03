@@ -7,8 +7,9 @@ from django.contrib.auth.views import LogoutView
 urlpatterns = [
     path('', views.homepage, name='home'),
     # path('make-sale/', views.make_sale, name='make_sale'),
-    path('sell-products/', views.sell_products, name='sell_products'),
+    
     path('add-product/', views.add_product, name='add_product'),
+    path('sell-products/', views.sell_products, name='sell_products'),
     path('products/', views.products, name='stocks'),
     path('inventory/value/', views.inventory_value_report, name='value_report'),
     path('logout/', views.logout_view, name='logout_view'),
@@ -19,6 +20,8 @@ urlpatterns = [
     path('reorder-point-products/', views.reorder_point_products, name='reorder_point_products'),
     path('quick-inventory-adjustment/', views.quick_inventory_adjustment, name='quick_inventory_adjustment'),
     path('quick-price-adjustment/', views.quick_price_adjustment, name='quick_price_adjustment'),
+    path('print-receipt/', views.print_receipt, name='print_receipt'),
+    path('import-products/', views.import_products, name='import_products'),
     # path('save-sale/', save_sale, name='save_sale'),
     # path('counter/', SellProductsView.as_view(), name='sell_products'),
     # path('sales/return/', views.sales_return, name='sales_return'),
@@ -32,6 +35,7 @@ urlpatterns = [
     path('stock_data/', views.stock_data, name='stock'),
     path('sales-reports/', views.sales_reports, name='sales-reports'),
     path('sell/success/', views.sales_success, name='sales_success'),
-
+    path('<int:product_id>/update/', views.update_product, name='update_product'),
+    path('<int:product_id>/delete/', views.delete_product, name='delete_product'),
    
 ]

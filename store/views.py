@@ -8,6 +8,7 @@ from django.http import HttpResponseBadRequest, JsonResponse, HttpResponseRedire
 from django.db.models.functions import TruncMonth
 # from barcode import EAN13
 # from barcode.writer import ImageWriter
+import pandas as pd
 from reportlab.pdfgen import canvas
 from io import BytesIO
 from django.utils import timezone
@@ -24,9 +25,9 @@ from django.contrib.auth import logout
 from django.views import View
 from django.http import HttpResponse
 from xhtml2pdf import pisa
-from django.template.loader import get_template
-
-from django.template.loader import render_to_string
+from django.template.loader import get_template, render_to_string
+import csv
+from decimal import Decimal, DecimalException  # Import DecimalException
 
 
 target_date = date.today()
@@ -40,6 +41,7 @@ end_date = date.today()
 def homepage(request):
     user_store = request.user.store  # Assuming the user is associated with a store
 
+    target_date = date.today()
     sales = Sale.objects.filter(store=user_store, sale_date=target_date).order_by('-id')
     daily_revenues = sales.filter(store=user_store, sale_date=target_date).aggregate(total_sales=Sum(models.F('product_id__standard_price') * models.F('quantity')))['total_sales'] 
     count_today_sales = sales.filter(store=user_store, sale_date=target_date)
@@ -66,31 +68,35 @@ def homepage(request):
     return render(request, 'homepage.html', context)
 
 @login_required(login_url='login')
-def add_product(request):
+def add_product(request):  # Renamed for clarity 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        inventory_quantity = request.POST.get('inventory_quantity')
-        standard_price = request.POST.get('standard_price')
-        current_cost = request.POST.get('current_cost')
-        reorder_point = request.POST.get('reorder_point')
+        store = request.user.store
 
-        # Retrieve the store associated with the logged-in user
-        store = request.user.store  # Assuming user is associated with a store through user.store
+        products_created = 0
+        for name, inventory_quantity, standard_price, current_cost, reorder_point in zip(
+            request.POST.getlist('name[]'),
+            request.POST.getlist('inventory_quantity[]'),
+            request.POST.getlist('standard_price[]'),
+            request.POST.getlist('current_cost[]'),
+            request.POST.getlist('reorder_point[]')
+        ):
+            try:
+                product = Product.objects.create(
+                    store=store,
+                    name=name,
+                    inventory_quantity=int(inventory_quantity),
+                    standard_price=Decimal(standard_price),
+                    current_cost=Decimal(current_cost),
+                    reorder_point=int(reorder_point) if reorder_point else 0  # Handle empty reorder_point
+                )
+                products_created += 1
+            except (ValueError, DecimalException):
+                messages.error(request, f'Invalid data for product: {name}')
 
-        # Create the product associated with the store
-        product = Product.objects.create(
-            store=store,
-            name=name,
-            inventory_quantity=inventory_quantity,
-            standard_price=standard_price,
-            current_cost=current_cost,
-            reorder_point=reorder_point,
-        )
+        messages.success(request, f'Successfully added {products_created} products.')
+        return redirect('/')  # Redirect to a product list page (if you have one)
 
-        messages.success(request, 'Product has been successfully added')
-        return redirect('/')  # Redirect to home page or product list page
-
-    return render(request, 'add_product.html')
+    return render(request, 'add_product.html') 
 # def add_product(request):
 #     if request.method == 'POST':
 #         name = request.POST['name']
@@ -472,6 +478,82 @@ def generate_pdf_receipt(sales):
 
 #     return render(request, 'sell_products.html', {'products': products})
 @login_required(login_url='login')
+# def sell_products(request):
+#     user_store = request.user.store
+#     products = Product.objects.filter(store=user_store)
+
+#     if request.method == 'POST':
+#         selected_products = request.POST.getlist('selected_products')
+#         quantities = request.POST.getlist('quantities')
+
+#         unique_product_ids = set()
+#         error_messages = []
+#         newly_created_sales = []
+
+#         for product_id, quantity in zip(selected_products, quantities):
+#             if product_id not in unique_product_ids:
+#                 unique_product_ids.add(product_id)
+
+#                 try:
+#                     product = Product.objects.get(pk=product_id)
+#                     quantity = int(quantity)
+
+#                     if product.inventory_quantity >= quantity:
+#                         sale = Sale(product=product, quantity=quantity, store=user_store)
+#                         sale.save()
+#                         newly_created_sales.append(sale)
+
+#                         product.inventory_quantity -= quantity
+#                         product.save()
+#                         messages.success(request, f"Successfully sold {quantity} unit(s) of {product.name}.")
+#                     else:
+#                         error_messages.append(f"Insufficient inventory for {product.name}. Available: {product.inventory_quantity}")
+
+#                 except Product.DoesNotExist:
+#                     error_messages.append(f"Product with ID {product_id} not found.")
+#                 except ValueError:
+#                     error_messages.append(f"Invalid quantity value for product ID {product_id}")
+
+#         if not error_messages:
+#             # Generate receipt
+#             sales = Sale.objects.filter(pk__in=[sale.pk for sale in newly_created_sales])
+#             pdf = generate_sale_receipt(sales)
+
+#             if pdf:
+#                 # Return PDF as HTTP response
+#                 response = HttpResponse(pdf, content_type='application/pdf')
+#                 response['Content-Disposition'] = 'inline; filename="sale_receipt.pdf"'  # Changed to 'inline'
+
+#                 # JavaScript for redirection
+#                 response.write('''
+#                 <script>
+#                         function afterPrint() {
+#                             window.open("{% url 'home' %}", "_blank"); // Open homepage in new tab
+#                         }
+#                         if (window.matchMedia) {
+#                             var mediaQueryList = window.matchMedia('print');
+#                             mediaQueryList.addListener(function(mql) {
+#                                 if (!mql.matches) {
+#                                     afterPrint();
+#                                 }
+#                             });
+#                         }
+#                         window.onafterprint = afterPrint;
+#                     </script>
+#                 ''')
+
+#                 return response
+            
+#             else:
+#                 error_messages.append("Failed to generate receipt.")
+
+#         for message in error_messages:
+#             messages.error(request, message)
+
+#         # Redirect to homepage
+#         return redirect('home')
+
+#     return render(request, 'sell_products.html', {'products': products})
 def sell_products(request):
     user_store = request.user.store
     # Filter products based on the store associated with the logged-in user
@@ -521,6 +603,7 @@ def sell_products(request):
 
 
 
+
 def download_receipt(request, sale_id):
     sale = get_object_or_404(Sale, pk=sale_id)
 
@@ -534,17 +617,14 @@ def download_receipt(request, sale_id):
 
 
 def generate_sale_receipt(sales):
-    # 1. Prepare HTML Content
-    html_content = render_to_string('receipt_template.html', {'sales': sales}) 
-
-    # 2. Convert HTML to PDF
+    html_content = render_to_string('receipt_template.html', {'sales': sales})
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html_content.encode("UTF-8")), result)
 
     if not pdf.err:
         return result.getvalue()
     else:
-        return None  # Or handle the error more gracefully
+        return None
 
 # @require_POST
 # def save_sale(request):
@@ -914,14 +994,19 @@ def inventory_value_report(request):
         labels.append(stock.name)
         inventory_quantity.append(stock.inventory_quantity)
 
-    return render(request, 'sales/inventory_report.html', {
+    context= {
         'products': stocks,
         'total_cost': total_cost,
         'total_value': total_value,
         'labels': labels,
         'quantity': inventory_quantity,
         'profit': profit
-    })
+    }
+# Check if the request is for a PDF download
+    if request.GET.get('pdf'):
+        return render_to_pdf('sales/inventory_report_pdf.html', context)
+    else:
+        return render(request, 'sales/inventory_report.html', context)
 
 
 @login_required(login_url='login')
@@ -930,9 +1015,19 @@ def top_selling_products(request):
     user_store = request.user.store  # Assuming user is associated with a store through user.store
 
     # Filter products based on the store associated with the logged-in user
-    top_products = Product.objects.filter(store=user_store).annotate(total_quantity_sold=Sum('sale__quantity')).order_by('-total_quantity_sold')[:10]
+    top_products = Product.objects.filter(store=user_store).annotate(total_quantity_sold=Sum('sale__quantity')).order_by('-total_quantity_sold')[:30]
 
-    return render(request, 'sales/top_selling_products.html', {'top_products': top_products})
+    context = {
+        'top_products': top_products
+    }
+
+    # Check if the request is for a PDF download
+    if request.GET.get('pdf'):
+        return render_to_pdf('sales/top_selling_products_pdf.html', context)
+    else:
+        return render(request, 'sales/top_selling_products.html', context)
+
+
 
 def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
@@ -963,7 +1058,16 @@ def reorder_point_products(request):
     # Retrieve products that are equal to or below the reorder point and associated with the store
     reorder_products = Product.objects.filter(store=user_store, inventory_quantity__lte=F('reorder_point'))
 
-    return render(request, 'reorder_point_products.html', {'reorder_products': reorder_products})
+    context = {
+        'reorder_products': reorder_products
+    }
+
+    # Check if the request is for a PDF download
+    if request.GET.get('pdf'):
+        return render_to_pdf('reorder_point_products_pdf.html', context)
+    else:
+        return render(request, 'reorder_point_products.html', context)
+
 
 
 @login_required(login_url='login')
@@ -1039,4 +1143,120 @@ def quick_price_adjustment(request):
     return render(request, 'quick_price_adjustment.html', {'products': products})
 
 
+@login_required(login_url='login')
+def print_receipt(request):
+    user_store = request.user.store
+    
+    if request.method == 'POST':
+        selected_sales_ids = request.POST.getlist('selected_sales')
+        selected_sales = Sale.objects.filter(id__in=selected_sales_ids, store=user_store)
+        
+        total_cost = sum(sale.get_total_price() for sale in selected_sales)
 
+        store_name = user_store.name
+        store_address = user_store.address
+
+        receipt_content = f"\n{'='*30}\n"
+        receipt_content += f"{store_name:^30}\n"
+        receipt_content += f"{store_address:^30}\n"
+        receipt_content += f"{'='*30}\n\n"
+        for sale in selected_sales:
+            receipt_content += f"{sale.product.name[:20]:<10} {sale.quantity:>4} x TZS {sale.product.standard_price:<6} = TZS {sale.get_total_price():>6}\n"
+
+        receipt_content += f"\n{'='*30}\n"
+        receipt_content += f"{'Total Cost:':<22} TZS {total_cost:>8}\n\n"
+        receipt_content += f"{'Thank you for your business':^30}\n"
+        
+        response = HttpResponse(receipt_content, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename="receipt.txt"'
+        return response
+
+    sales = Sale.objects.filter(store=user_store, sale_date=target_date).order_by('-id')
+    return render(request, 'print_receipt.html', {'sales': sales})
+
+
+@login_required
+def import_products(request):
+    if request.method == 'POST':
+        # Assuming the file input field in the form is named 'file'
+        uploaded_file = request.FILES['file']
+        
+        # Check if the uploaded file is a CSV or Excel file
+        if uploaded_file.name.endswith('.csv'):
+            products = parse_csv(uploaded_file)
+        elif uploaded_file.name.endswith('.xlsx'):
+            products = parse_excel(uploaded_file)
+        else:
+            messages.error(request, "Invalid file format. Please upload a CSV or Excel file.")
+            return redirect('import_products')
+
+        # Save products to the database
+        if products:
+            for product in products:
+                product.store = request.user.store
+                product.save()
+            messages.success(request, "Products imported successfully.")
+        else:
+            messages.error(request, "No products found in the file.")
+        
+        return redirect('import_products')
+
+    return render(request, 'import_products.html')
+
+def parse_csv(uploaded_file):
+    products = []
+    decoded_file = uploaded_file.read().decode('utf-8').splitlines()
+    csv_reader = csv.DictReader(decoded_file)
+    
+    for row in csv_reader:
+        if all(field in row for field in ['name', 'inventory_quantity', 'standard_price', 'current_cost']):
+            product = Product(
+                name=row['name'],
+                inventory_quantity=int(row['inventory_quantity']),
+                standard_price=float(row['standard_price']),
+                current_cost=float(row['current_cost']),
+                reorder_point=int(row.get('reorder_point', 0))  # Optional field
+            )
+            products.append(product)
+    
+    return products
+
+def parse_excel(uploaded_file):
+    products = []
+    df = pd.read_excel(uploaded_file)
+    
+    for index, row in df.iterrows():
+        if all(field in row for field in ['name', 'inventory_quantity', 'standard_price', 'current_cost']):
+            product = Product(
+                name=row['name'],
+                inventory_quantity=int(row['inventory_quantity']),
+                standard_price=float(row['standard_price']),
+                current_cost=float(row['current_cost']),
+                reorder_point=int(row.get('reorder_point', 0))  # Optional field
+            )
+            products.append(product)
+    
+    return products
+
+@login_required(login_url='login')
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id, store=request.user.store)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('stocks')
+    return render(request, 'delete_product.html', {'product': product})
+
+@login_required(login_url='login')
+def update_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id, store=request.user.store)
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product updated successfully.')
+            return redirect('stocks')  # Redirect to product detail page
+    else:
+        form = ProductForm(instance=product)
+    
+    return render(request, 'update_product.html', {'form': form, 'product': product})

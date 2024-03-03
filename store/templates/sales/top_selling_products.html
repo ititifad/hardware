@@ -3,6 +3,9 @@
 {% load humanize %}
 
 {% block content %}
+<div class="text-right">
+<a href="{% url 'top_selling_products' %}?pdf=1" target="_blank" class="btn btn-info">Generate & Download PDF</a>
+</div>
 <h1 class="text-center">Top selling Products</h1>
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-sm">

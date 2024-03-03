@@ -1,88 +1,156 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% block content %}
-<script>
-    var selectedProductSet = new Set();
+<div class="container">
+  <h2>Sell Products</h2>
 
-    function addProductToTable() {
-        var selectedProducts = document.getElementById('selectedProducts');
-        var quantities = document.getElementById('quantities');
-        var productTable = document.getElementById('productTable');
-
-        var selectedProductId = selectedProducts.value;
-        var quantity = quantities.value;
-
-        // Check if product is already added
-        if (!selectedProductSet.has(selectedProductId)) {
-            selectedProductSet.add(selectedProductId);
-
-            var row = productTable.insertRow(-1);
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            var cell3 = row.insertCell(2); // Added for standard price
-
-            cell1.innerText = selectedProducts.options[selectedProducts.selectedIndex].text;
-            cell2.innerText = quantity;
-
-            // Fetch standard price from selected product
-            var product = document.getElementById('selectedProducts').options[document.getElementById('selectedProducts').selectedIndex];
-            var standardPrice = product.getAttribute('data-standard-price');
-            cell3.innerText = standardPrice;
-
-            // Create hidden inputs to send product and quantity data with the form
-            var input1 = document.createElement("input");
-            input1.type = "hidden";
-            input1.name = "selected_products";
-            input1.value = selectedProductId;
-            row.appendChild(input1);
-
-            var input2 = document.createElement("input");
-            input2.type = "hidden";
-            input2.name = "quantities";
-            input2.value = quantity;
-            row.appendChild(input2);
-        } else {
-            // Handle duplicate product selection (e.g., show a message)
-            alert("Product already added to the table.");
-        }
-    }
-
-    function clearSelectedProductSet() {
-        selectedProductSet.clear();
-    }
-</script>
-
-
-
-<h2>Sell Products</h2>
-
-<form method="post" action="{% url 'sell_products' %}" onsubmit="clearSelectedProductSet()">
+  <form method="post" action="{% url 'sell_products' %}" onsubmit="clearSelectedProductSet()">
     {% csrf_token %}
 
-    <label for="products">Select Products:</label>
-    <select id="selectedProducts" name="selected_products">
-        {% for product in products %}
-        <option value="{{ product.id }}" data-standard-price="{{ product.standard_price|intcomma }}">{{ product.name }}</option>
-        {% endfor %}
-    </select>
+    <div class="row">
+      <div class="col-md-6"> 
+        <div class="form-group"> 
+          <label for="products">Select Products:</label>
+          <select id="selectedProducts" name="selected_products" class="form-select"> 
+            
+            {% for product in products %}
+              <option value="{{ product.id }}" data-standard-price="{{ product.standard_price }}">{{ product.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3"> 
+        <div class="form-group"> 
+          <label for="quantity">Quantity:</label>
+          <input type="number" id="quantities" name="quantities" value="1" min="1" class="form-control">
+        </div>
+      </div>
+      <div class="col-md-3"> 
+        <button type="button" onclick="addProductToTable()" class="btn btn-primary mt-4">Add to Table</button> 
+      </div>
+    </div>
 
-    <label for="quantity">Quantity:</label>
-    <input type="number" id="quantities" name="quantities" value="1" min="1">
+    <hr>
 
-    <button type="button" onclick="addProductToTable()">Add to Table</button>
-<hr>
-    <table id="productTable" class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Standard Price</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
+    <table id="productTable" class="table table-bordered table-striped table-hover"> 
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Standard Price</th>
+          <th>Action</th> <!-- Added for remove button -->
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
     </table>
 
-    <button type="submit">Sell Products</button>
-</form>
+    <div class="float-end">
+      <h4><strong>Total Cost:</strong> TZS <span id="totalCost">0.00</span></h4>
+    </div>
+
+    <button type="submit" class="btn btn-success">Sell Products</button>
+  </form>
+</div>
+
+<script>
+    var selectedProductSet = new Set(); 
+var totalCost = 0; 
+
+function addProductToTable() {
+    var selectedProducts = document.getElementById('selectedProducts');
+    var quantities = document.getElementById('quantities');
+    var productTable = document.getElementById('productTable');
+
+    var selectedProductId = selectedProducts.value;
+    var quantity = parseInt(quantities.value); 
+
+    // Check if product is already added
+    if (!selectedProductSet.has(selectedProductId)) {
+        selectedProductSet.add(selectedProductId);
+
+        var row = productTable.insertRow(-1);
+        var cell1 = row.insertCell(0); 
+        var cell2 = row.insertCell(1); 
+        var cell3 = row.insertCell(2); 
+        var cell4 = row.insertCell(3); 
+
+        cell1.innerText = selectedProducts.options[selectedProducts.selectedIndex].text;
+
+        // Quantity input field
+        var quantityInput = document.createElement('input'); 
+        quantityInput.type = 'number';
+        quantityInput.min = '1';
+        quantityInput.value = quantity; 
+        quantityInput.dataset.originalQuantity = quantity;
+        quantityInput.addEventListener('input', function() { updateQuantity(this.closest('tr')); });
+        cell2.appendChild(quantityInput);  
+
+        var product = document.getElementById('selectedProducts').options[document.getElementById('selectedProducts').selectedIndex];
+        var standardPrice = parseFloat(product.getAttribute('data-standard-price')); 
+        cell3.innerText = standardPrice.toFixed(2); 
+
+        // Remove button
+        var removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-danger btn-sm';
+        removeButton.innerText = 'Remove';
+        removeButton.onclick = function() {
+            row.remove(); 
+            selectedProductSet.delete(selectedProductId);
+            totalCost -= (quantity * standardPrice);
+            document.getElementById('totalCost').innerText = totalCost.toFixed(2);
+        };
+        cell4.appendChild(removeButton); 
+
+        totalCost += (quantity * standardPrice);
+        document.getElementById('totalCost').innerText = totalCost.toFixed(2); 
+
+        var input1 = document.createElement("input");
+        input1.type = "hidden";
+        input1.name = "selected_products";
+        input1.value = selectedProductId;
+        row.appendChild(input1);
+
+        var input2 = document.createElement("input");
+        input2.type = "hidden";
+        input2.name = "quantities";
+        input2.value = quantity;
+        row.appendChild(input2);
+    } else {
+        alert("Product already added to the table.");
+    }
+}
+
+function clearSelectedProductSet() {
+    selectedProductSet.clear();
+    totalCost = 0; 
+    document.getElementById('totalCost').innerText = "0.00"; 
+}
+
+// ... (Your existing code)
+
+function updateQuantity(row) {
+    const quantityInput = row.querySelector('td:nth-child(2) input');
+    const standardPriceCell = row.querySelector('td:nth-child(3)');
+    const quantity = parseInt(quantityInput.value) || 0;
+    const standardPrice = parseFloat(standardPriceCell.textContent);  
+
+    totalCost -= (quantityInput.dataset.originalQuantity * standardPrice); 
+    totalCost += (quantity * standardPrice); 
+    document.getElementById('totalCost').innerText = totalCost.toFixed(2); 
+
+    // Update the hidden quantity input field
+    const hiddenQuantityInput = row.querySelector('input[name="quantities"]');
+    hiddenQuantityInput.value = quantity; 
+
+    quantityInput.dataset.originalQuantity = quantity; 
+}
+
+// ... (Rest of your code)
+
+
+
+</script>
+
 {% endblock content %}

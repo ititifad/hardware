@@ -72,9 +72,9 @@ h1{
     <div class="card">
         <div class="totals">
             <p>Total Sales: {{ total_sales }}</p>
-            <p>Total Revenue: TZS {{ total_revenue }}</p>
-            <p>Total Cost: TZS {{ total_cost }}</p>
-            <p>Profit: TZS {{ profit }}</p>
+            <p>Total Revenue: TZS {{ total_revenue|intcomma }}</p>
+            <p>Total Cost: TZS {{ total_cost|intcomma }}</p>
+            <p>Profit: TZS {{ profit|intcomma }}</p>
         </div>
     </div>
 

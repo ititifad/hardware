@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1 class="text-center">Import Products</h1>
+    
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="formFileLg" class="form-label">Import Store Products</label>
+        <input type="file" class="form-control form-control-lg" name="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required><br>
+        <button type="submit" class="btn btn-primary">Import</button>
+    </form>
+</div>
+{% endblock content %}

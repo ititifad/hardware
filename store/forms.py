@@ -32,3 +32,7 @@ class ProductNameForm(forms.Form):
 #         except Product.DoesNotExist:
 #             raise forms.ValidationError('Product with this barcode does not exist.')
 #         return product
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'inventory_quantity', 'standard_price', 'current_cost', 'reorder_point']
